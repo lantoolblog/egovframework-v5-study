@@ -26,6 +26,8 @@
 
 * 웹브라우저 화면
 
+  ![lab-1-3-실행결과](doc-resources/lab-1-3-screen-result.jpg)
+  
   
 
 ## (4) LAB 1-4: [Code Generation 실습 (VS Code)](lab-1-4)
