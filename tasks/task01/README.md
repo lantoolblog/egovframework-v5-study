@@ -33,3 +33,4 @@
 ## (4) LAB 1-4: [Code Generation 실습 (VS Code)](lab-1-4)
 
 * 웹브라우저 화면
+  ![lab-1-4-실행결과](doc-resources/lab-1-4-screen-result.jpg)
