@@ -1,10 +1,10 @@
-# ...
+# (3) LAB 1-3: 템플릿 프로젝트 생성 실습 (VS Code)
 
 
 
-내가 쓰고있느 VSCode가 복잡한 상태라 Antigravity에다 설치해서 쓰기로 했음..
+내가 사용중인.. VSCode가 복잡한 상태라 Antigravity에다 설치해서 쓰기로 했음..
 
-**egov-5**라는 프로필을 만듬.
+**egov-v5**라는 프로필을 만듬.
 
 ![image-20260529134459829](doc-resources/image-20260529134459829.png)
 
@@ -64,3 +64,14 @@ eGovFrame Initializr in VSCode 확장 설치
 ```
 
 전자정부 프레임워크 5.0 교육자료에 포함된 Maven 로컬 리포지 토리를 사용하도록 수정이 필요함.
+
+
+
+
+
+그리고 Redhat의 Community 서버 설정하는 법은...
+
+내가 가이드를 따로 적었으니 그거 참조하면 되겠다.
+
+* VSCode 및 Antigravity IDE에서 Tomcat 연동하기: Redhat Community Server Connectors 사용 가이드
+  * https://github.com/lantoolblog/redhat-community-server-connectors-guide
