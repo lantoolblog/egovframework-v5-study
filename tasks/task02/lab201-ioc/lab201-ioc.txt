@@ -1,0 +1,691 @@
+﻿실습환경 구성
+ - lab201-ioc 프로젝트 import
+ - maven repository 설정 및 dependency library 맞춤
+
+Step 1. XML 설정 방식의 Spring Bean 서비스 작성
+
+ 1) Interface 작성
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/EmpService.java 를 작성한다.
+	/**************************************************************************************/
+	public interface EmpService {
+
+		public void insertEmp(EmpVO empVO) throws Exception;
+
+		public void updateEmp(EmpVO empVO) throws Exception;
+
+		public void deleteEmp(EmpVO empVO) throws Exception;
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception;
+
+		public List<EmpVO> selectEmpList() throws Exception;
+
+	}
+	/**************************************************************************************/
+	Ctrl + Shift + O (source > Organize Imports) 를 수행하여 자동 import 를 수행한다. 
+        cf.) 아직 EmpVO 를 작성하지 않아 컴파일 에러 상태일 것이다.
+	
+ 2) VO 작성 - 현재 실습과정에서 사용하는 DAO 에서 DB 구현 없이 자바 class 영역에 데이터를 임시 관리할 때 데이터 비교를 위해 Comparable 구현 (Generic 스타일로)
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/EmpVO.java 를 작성한다.
+	/**************************************************************************************/
+	public class EmpVO implements Serializable {
+
+		private int empNo;
+
+		private String empName;
+
+		private String job;
+	}
+	/**************************************************************************************/
+	. 실제 이 실습 프로젝트에서 사용하는 EmpVO 의 속성은 위 3개 이다. 위와 같이 private 멤버 속성만 정의한 상태에서
+	마우스 우클릭 > Source > Generate Getters and Setters 를 실행하여 팝업된 윈도우에서 getter/setter 메서드를 생성할 대상 속성을 선택(Select All) 한 다음, OK 실행 --> 메서드 생성 확인
+	. 이하 Ctrl + Shift + O 자동 import 는 필요시 수시로 수행함!!
+	. EmpVO 의 마커바 상에서 quick fix 로 제공되는 기능 중 Add generated serial version ID 추가 하기를 권고함.
+	
+	. Comparable 를 implements 토록 추가 - 여기서는 generic 스타일로 Comparable<EmpVO> 로 한정
+	. compareTo 메서드 추가 - 여기서는 EmpVO 의 empNo 속성의 크기를 비교하여 판단토록 하였음.
+	/**************************************************************************************/
+	public class EmpVO implements Serializable, Comparable<EmpVO> {
+		...
+		public int compareTo(EmpVO o) {
+			if (empNo > o.getEmpNo()) {
+				return 1;
+			} else if (empNo < o.getEmpNo()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	/**************************************************************************************/
+		
+	. 전체 EmpVO
+	/**************************************************************************************/
+	public class EmpVO implements Serializable, Comparable<EmpVO> {
+
+		private static final long serialVersionUID = -8049578957221741495L;
+
+		private int empNo;
+
+		private String empName;
+
+		private String job;
+
+		private BigDecimal mgr;
+
+		private Date hireDate;
+
+		private BigDecimal sal;
+
+		private BigDecimal comm;
+
+		private BigDecimal deptNo;
+
+		public int getEmpNo() {
+			return empNo;
+		}
+
+		public void setEmpNo(int empNo) {
+			this.empNo = empNo;
+		}
+
+		public String getEmpName() {
+			return empName;
+		}
+
+		public void setEmpName(String empName) {
+			this.empName = empName;
+		}
+
+		public String getJob() {
+			return job;
+		}
+
+		public void setJob(String job) {
+			this.job = job;
+		}
+
+		public BigDecimal getMgr() {
+			return mgr;
+		}
+
+		public void setMgr(BigDecimal mgr) {
+			this.mgr = mgr;
+		}
+
+		public Date getHireDate() {
+			return hireDate;
+		}
+
+		public void setHireDate(Date hireDate) {
+			this.hireDate = hireDate;
+		}
+
+		public BigDecimal getSal() {
+			return sal;
+		}
+
+		public void setSal(BigDecimal sal) {
+			this.sal = sal;
+		}
+
+		public BigDecimal getComm() {
+			return comm;
+		}
+
+		public void setComm(BigDecimal comm) {
+			this.comm = comm;
+		}
+
+		public BigDecimal getDeptNo() {
+			return deptNo;
+		}
+
+		public void setDeptNo(BigDecimal deptNo) {
+			this.deptNo = deptNo;
+		}
+
+		public int compareTo(EmpVO o) {
+			if (empNo > o.getEmpNo()) {
+				return 1;
+			} else if (empNo < o.getEmpNo()) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+
+	}
+	/**************************************************************************************/
+
+	. EmpService 소스에서 Ctrl+Shift+O 하여 EmpVO 자동 import
+
+ 3) Impl 작성
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/XmlEmpServiceImpl.java 를 작성한다.
+	/**************************************************************************************/
+	public class XmlEmpServiceImpl implements EmpService {
+
+		private XmlEmpDAO empDAO;
+
+		public void setEmpDAO(XmlEmpDAO empDAO) {
+			this.empDAO = empDAO;
+		}
+
+		public void insertEmp(EmpVO empVO) throws Exception {
+			empDAO.insertEmp(empVO);
+		}
+
+		public void updateEmp(EmpVO empVO) throws Exception {
+			empDAO.updateEmp(empVO);
+		}
+
+		public void deleteEmp(EmpVO empVO) throws Exception {
+			empDAO.deleteEmp(empVO);
+		}
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			return empDAO.selectEmp(empVO);
+		}
+
+		public List<EmpVO> selectEmpList() throws Exception {
+			return empDAO.selectEmpList();
+		}
+
+	}
+	/**************************************************************************************/
+	. 위에서 dependency 객체로 XmlEmpDAO 를 setEmpDAO 메서드를 통해 Container 로부터 주입받아 동작하게 되며 EmpService 자체에 복잡한 비지니스 로직이 필요치 않은 경우로 DAO 에 단순 CRUD 기능을 위임해 처리하고 있음을 확인할 수 있음. 목록조회 메서드에서 확인할 수 있듯이 JDK 1.5 이상의 Generic 스타일로 구현하는 것을 권고함
+
+ 4) DAO 작성
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/XmlEmpDAO.java 를 작성한다. 
+	/**************************************************************************************/
+	public class XmlEmpDAO {
+
+		static List<EmpVO> list;
+
+		static {
+			list = new ArrayList<EmpVO>();
+			EmpVO empVO;
+			for (int i = 1; i <= 100; i++) {
+				empVO = new EmpVO();
+				empVO.setEmpNo(i);
+				empVO.setEmpName("EmpName " + i);
+				empVO.setJob("SALESMAN");
+				list.add(empVO);
+			}
+		}
+
+		public void insertEmp(EmpVO empVO) throws Exception {
+			list.add(empVO);
+			Collections.sort(list);
+		}
+
+		public void updateEmp(EmpVO empVO) throws Exception {
+			int index = Collections.binarySearch(list, empVO);
+			// 해당 데이터가 없는 경우 여기서는 ArrayIndexOutOfBoundsException 발생할 것임
+			EmpVO orgEmpVO = list.get(index);
+
+			orgEmpVO.setEmpName(empVO.getEmpName());
+			orgEmpVO.setJob(empVO.getJob());
+		}
+
+		public void deleteEmp(EmpVO empVO) throws Exception {
+			list.remove(Collections.binarySearch(list, empVO));
+			Collections.sort(list);
+		}
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			int index = Collections.binarySearch(list, empVO);
+
+			// list search 결과 해당값을 찾을 수 없으면 음수값
+			// (-(insertion point) - 1) 이 되돌려짐
+			return index < 0 ? null : list.get(index);
+		}
+
+		public List<EmpVO> selectEmpList() throws Exception {
+			return list;
+		}
+
+	}
+	/**************************************************************************************/
+	. 현 실습과정의 위 DAO 에서는 DB 연동/구현 없이 static 영역에 100 개의 EmpVO 에 대한 리스트를 생성해 두고 insert/update/delete 시에 static 하게 관리하고 있는 데이터에 대해 추가/변경/삭제가 일어나도록 간략히 구현한 예임. DB 가 아니므로 duplcated key 체크 등 번잡한 기능은 고려치 않았고, 데이터의 변경시에는 항상 sorting 을 새로 하여 select 시 binarySearch 로 빨리 찾을 수 있도록 하였음(EmpVO 는 Comparable 을 구현하였음). 목록조회는 검색조건 없이 전체 데이터를 return 하는 것으로 작성하였음.
+
+ 5) xml 설정 파일 작성
+	. /lab201-ioc/src/test/resources/META-INF/spring/context-emp.xml 를 작성한다.
+	/**************************************************************************************/
+	<!-- xml 형식 bean 정의 -->
+	
+	<bean id="xmlEmpService" class="egovframework.lab.ioc.service.impl.XmlEmpServiceImpl">
+		<property name="empDAO" ref="xmlEmpDAO" />
+	</bean>
+
+	<bean id="xmlEmpDAO" class="egovframework.lab.ioc.service.impl.XmlEmpDAO" />
+	/**************************************************************************************/
+	. xmlEmpService 와 xmlEmpDAO 에 대한 bean 설정을 확인할 수 있으며 xmlEmpService 의 property 설정 요소(setter injection 방식) 로 xmlEmpDAO 를 연결하고 있음을 확인 가능.
+	. Spring IDE 기반의 bean 설정파일에 대한 다양한 code assist 가 지원되므로 대상 클래스에 Ctrl + 마우스 오버 --> 클릭시 대상 소스 열림 또는 class="" 속성, property name="" 속성 내에서 [일부typing] Ctrl + Space 등을 사용하여 자동 완성되는 코드를 사용하는 것이 오타 가능성을 줄일 수 있음.
+
+ 6) Testcase 작성
+	. /lab201-ioc/src/test/java/egovframework/lab/ioc/service/EmpServiceTest.java 를 작성한다.
+	/**************************************************************************************/
+	package egovframework.lab.ioc.service;
+	
+	import static org.junit.jupiter.api.Assertions.assertEquals;
+	import static org.junit.jupiter.api.Assertions.assertNotNull;
+	import static org.junit.jupiter.api.Assertions.assertNull;
+	import static org.junit.jupiter.api.Assertions.assertTrue;
+	
+	import java.util.List;
+	
+	import jakarta.annotation.Resource;
+	
+	import org.junit.jupiter.api.Test;
+	import org.junit.jupiter.api.extension.ExtendWith;
+	import org.springframework.test.context.ContextConfiguration;
+	import org.springframework.test.context.junit.jupiter.SpringExtension;
+	
+	@ExtendWith(SpringExtension.class)
+	@ContextConfiguration(
+	locations = {
+		"classpath*:META-INF/spring/context-common.xml"
+		,"classpath*:META-INF/spring/context-emp.xml"
+		// 이 주석을 풀고 테스트 시 annotationEmpService 에 대해서는 delete 메서드에 @Debug 를 설정하였으므로 trace 로그가 출력될 것임.
+		//,"classpath*:META-INF/spring/context-postprocessor.xml"
+		})
+	//Java Config만 사용할 경우 위의 locations 설정된 @ContextConfiguration 전체를 주석 처리하고 밑의 주석을 풀도록 한다.
+	//또한 정확한 테스트를 위해 [Step 2-5] 에서의 component-scan 설정을 주석 처리하도록 한다.
+	//@ContextConfiguration(classes = EmpConfig.class)
+	public class EmpServiceTest {
+	
+		// TODO [Step 1-6, 2-6, 3-6] EmpServiceTest 작성
+	
+		// xml 형식으로 bean 설정한 경우 - 주석을 변경해 가며 xml, annotation, java config 에 대해 테스트 할것
+		@Resource(name = "xmlEmpService")
+		EmpService empService;
+	
+		// annotation 형식으로 bean 설정한 경우
+		//@Resource(name = "annotationEmpService")
+		//EmpService empService;
+	
+		// java config 형식으로 bean 설정한 경우
+		// @Resource(name = "javaConfigEmpService")
+		// EmpService empService;
+	
+		public EmpVO makeVO() {
+			// DAO 확인 - static 하게 관리하는 100 개 기본 데이터 있음
+			return makeVO(101);
+		}
+	
+		public EmpVO makeVO(int empNo) {
+			EmpVO vo = new EmpVO();
+			vo.setEmpNo(empNo);
+			vo.setEmpName("홍길동" + empNo);
+			vo.setJob("개발자");
+			return vo;
+		}
+	
+		public void checkResult(EmpVO vo, EmpVO resultVO) {
+			assertNotNull(resultVO);
+			assertEquals(vo.getEmpNo(), resultVO.getEmpNo());
+			assertEquals(vo.getEmpName(), resultVO.getEmpName());
+			assertEquals(vo.getJob(), resultVO.getJob());
+		}
+	
+		@Test
+		public void testInsertEmp() throws Exception {
+			EmpVO vo = makeVO();
+	
+			// insert
+			empService.insertEmp(vo);
+	
+			// select
+			EmpVO resultVO = empService.selectEmp(vo);
+	
+			// check
+			checkResult(vo, resultVO);
+		}
+	
+		@Test
+		public void testUpdateEmp() throws Exception {
+			EmpVO vo = makeVO(102);
+	
+			// insert
+			empService.insertEmp(vo);
+	
+			// data change
+			vo.setEmpName("홍길순");
+			vo.setJob("설계자");
+	
+			// update
+			empService.updateEmp(vo);
+	
+			// select
+			EmpVO resultVO = empService.selectEmp(vo);
+	
+			// check
+			checkResult(vo, resultVO);
+		}
+	
+		@Test
+		public void testDeleteEmp() throws Exception {
+			EmpVO vo = makeVO(103);
+	
+			// insert
+			empService.insertEmp(vo);
+	
+			// delete
+			empService.deleteEmp(vo);
+	
+			// select
+			EmpVO resultVO = empService.selectEmp(vo);
+	
+			// null 이어야 함
+			assertNull(resultVO);
+		}
+	
+		@Test
+		public void testSelectEmpList() throws Exception {
+	
+			// select list
+			List<EmpVO> resultList = empService.selectEmpList();
+	
+			// check
+			int firstListSize = resultList.size();
+			assertTrue(firstListSize > 100);
+			// DAO 에서 Emp 데이터를 관리할 때 항상 sorted 된 상태임
+			assertEquals(1, resultList.get(0).getEmpNo());
+	
+			// delete first data
+			EmpVO empVO = new EmpVO();
+			empVO.setEmpNo(1);
+	
+			empService.deleteEmp(empVO);
+	
+			// select List again
+			resultList = empService.selectEmpList();
+	
+			assertEquals(firstListSize - 1, resultList.size());
+			// DAO 에서 Emp 데이터를 관리할 때 항상 sorted 된 상태임
+			assertEquals(2, resultList.get(0).getEmpNo());
+			assertEquals("EmpName 2", resultList.get(0).getEmpName());
+			assertEquals("SALESMAN", resultList.get(0).getJob());
+	
+		}
+	
+	}
+	/**************************************************************************************/
+	. Spring 연동을 위해 제공하는 @RunWith(SpringJUnit4ClassRunner.class), @ContextConfiguration (...) 설정에 유의한다. 테스트에 필요한 Spring Bean 설정 파일만으로 제한하는 것이 바람직함.
+	. 테스트에 필요한 Spring Bean 들은 annotation 형태(여기서는 @Resource)로 injection 하여 사용한다.
+	. JUnit 4.4 의 Assert 관련 기능은 Ctrl+Shift+O 로 자동 import 되지 않음. static import 사용해야 함. --> 에러로 표시되는 asssertXX 사용 위치에 마우스 오버 하면 Add static imports ... 와 같은 quick fix 가 나타나 활용 가능함.
+
+
+2. Annotation 설정 방식의 Spring Bean 서비스 작성
+
+ 1) 동일한 Interface
+
+ 2) 동일한 VO
+
+ 3) Annotation 을 적용한 Impl
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/AnnotationEmpServiceImpl.java 를 작성한다.
+	/**************************************************************************************/
+	@Service("annotationEmpService")
+	public class AnnotationEmpServiceImpl implements EmpService {
+
+		@Resource(name = "annotationEmpDAO")
+		private AnnotationEmpDAO empDAO;
+
+		public void insertEmp(EmpVO empVO) throws Exception {
+			empDAO.insertEmp(empVO);
+		}
+
+		public void updateEmp(EmpVO empVO) throws Exception {
+			empDAO.updateEmp(empVO);
+		}
+
+		public void deleteEmp(EmpVO empVO) throws Exception {
+			empDAO.deleteEmp(empVO);
+		}
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			return empDAO.selectEmp(empVO);
+		}
+
+		public List<EmpVO> selectEmpList() throws Exception {
+			return empDAO.selectEmpList();
+		}
+
+	}
+	/**************************************************************************************/
+	. @Service 스테레오 타입 Annotation 을 사용하여 bean 설정하였음.
+	. @Resource (JSR250 표준) Annotation 을 사용하여 Dependency Bean(여기서는 AnnotationEmpDAO) 를 injection 하였음.
+	. 기타 CRUD 관련 비지니스 메서드는 동일함.
+
+ 4) Annotation 을 적용한 DAO
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/AnnotationEmpDAO.java 를 작성한다.
+	/**************************************************************************************/
+	@Repository("annotationEmpDAO")
+	public class AnnotationEmpDAO {
+
+		static List<EmpVO> list;
+
+		static {
+			list = new ArrayList<EmpVO>();
+			EmpVO empVO;
+			for (int i = 1; i <= 100; i++) {
+				empVO = new EmpVO();
+				empVO.setEmpNo(i);
+				empVO.setEmpName("EmpName " + i);
+				empVO.setJob("SALESMAN");
+				list.add(empVO);
+			}
+		}
+
+		public void insertEmp(EmpVO empVO) throws Exception {
+			list.add(empVO);
+			Collections.sort(list);
+		}
+
+		public void updateEmp(EmpVO empVO) throws Exception {
+			int index = Collections.binarySearch(list, empVO);
+			// 해당 데이터가 없는 경우 여기서는 ArrayIndexOutOfBoundsException 발생할 것임
+			EmpVO orgEmpVO = list.get(index);
+
+			orgEmpVO.setEmpName(empVO.getEmpName());
+			orgEmpVO.setJob(empVO.getJob());
+		}
+
+		public void deleteEmp(EmpVO empVO) throws Exception {
+			list.remove(Collections.binarySearch(list, empVO));
+			Collections.sort(list);
+		}
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			int index = Collections.binarySearch(list, empVO);
+
+			// list search 결과 해당값을 찾을 수 없으면 음수값
+			// (-(insertion point) - 1) 이 되돌려짐
+			return index < 0 ? null : list.get(index);
+		}
+
+		public List<EmpVO> selectEmpList() throws Exception {
+			return list;
+		}
+
+	}
+	/**************************************************************************************/
+	. xml 설정 방식의 예와 마찬가지로 DB 연동 없이 테스트를 위한 static 한 내부 데이터를 관리하며 CRUD 하는 예임.
+	. @Repository 스테레오 타입 Annotation 을 사용하여 bean 설정 하였음. (DAO 인 경우)
+
+ 5) common 설정 파일 - component scan
+	. /lab201-ioc/src/test/resources/META-INF/spring/context-common.xml 를 작성한다.
+	/**************************************************************************************/
+		<context:component-scan base-package="egovframework" />
+	/**************************************************************************************/
+
+ 6) Testcase 작성 (기존 Testcase 에서 DI 하는 서비스만 변경)
+	. /lab201-ioc/src/test/java/egovframework/lab/ioc/service/EmpServiceTest.java 를 작성한다. (이미 작성하였음.)
+	/**************************************************************************************/
+    // xml 형식으로 bean 설정한 경우 - 주석을 변경해 가며 xml, annotation 에 대해 테스트 할것
+	// @Resource(name = "xmlEmpService")
+	// EmpService empService;
+
+    // annotation 형식으로 bean 설정한 경우
+     @Resource(name = "annotationEmpService")
+     EmpService empService;
+	/**************************************************************************************/
+	. annotation 형식으로 설정한 annotationEmpService 를 테스트 대상 서비스로 사용토록 주석 변경하였음.
+
+3. Java Config 설정 방식의 Spring Bean 서비스 작성
+ 
+ 1) 동일한 Interface
+
+ 2) 동일한 VO
+
+ 3) Impl 작성
+ 	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/JavaConfigEmpServiceImpl.java 를 작성한다.
+	/**************************************************************************************/
+	public class JavaConfigEmpServiceImpl implements EmpService {
+
+		private JavaConfigEmpDAO empDAO;
+
+		public void setEmpDAO(JavaConfigEmpDAO empDAO) {
+        	this.empDAO = empDAO;
+    	}
+    
+    	public void insertEmp(EmpVO empVO) throws Exception {
+        	empDAO.insertEmp(empVO);
+    	}
+    
+    	public void updateEmp(EmpVO empVO) throws Exception {
+        	empDAO.updateEmp(empVO);
+    	}
+    
+    	public void deleteEmp(EmpVO empVO) throws Exception {
+        	empDAO.deleteEmp(empVO);
+    	}
+    
+    	public EmpVO selectEmp(EmpVO empVO) throws Exception {
+        	return empDAO.selectEmp(empVO);
+    	}
+    
+    	public List<EmpVO> selectEmpList() throws Exception {
+        	return empDAO.selectEmpList();
+    	}
+
+	}
+	/**************************************************************************************/
+	. dependency 객체로 JavaConfigEmpDAO 를 setEmpDAO 메서드를 통해 Container 로부터 주입받아 동작
+	. 기타 CRUD 관련 비지니스 메서드는 동일함.
+
+4) DAO 작성
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/service/impl/JavaConfigEmpDAO.java 를 작성한다. 
+	/**************************************************************************************/
+	public class JavaConfigEmpDAO {
+
+		static List<EmpVO> list;
+
+		static {
+        	list = new ArrayList<EmpVO>();
+        	EmpVO empVO;
+        	for (int i = 1; i <= 100; i++) {
+            	empVO = new EmpVO();
+            	empVO.setEmpNo(i);
+            	empVO.setEmpName("EmpName " + i);
+            	empVO.setJob("SALESMAN");
+            	list.add(empVO);
+        	}
+    	}
+
+		public void insertEmp(EmpVO empVO) throws Exception {
+        	list.add(empVO);
+        	Collections.sort(list);
+    	}
+
+		public void updateEmp(EmpVO empVO) throws Exception {
+    		int index = Collections.binarySearch(list, empVO);
+        	// 해당 데이터가 없는 경우 여기서는 ArrayIndexOutOfBoundsException 발생할 것임
+        	EmpVO orgEmpVO = list.get(index);
+
+        	orgEmpVO.setEmpName(empVO.getEmpName());
+        	orgEmpVO.setJob(empVO.getJob());
+    	}
+
+		public void deleteEmp(EmpVO empVO) throws Exception {
+			list.remove(Collections.binarySearch(list, empVO));
+			Collections.sort(list);
+		}
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			int index = Collections.binarySearch(list, empVO);
+
+			// list search 결과 해당값을 찾을 수 없으면 음수값
+			// (-(insertion point) - 1) 이 되돌려짐
+			return index < 0 ? null : list.get(index);
+		}
+
+		public List<EmpVO> selectEmpList() throws Exception {
+			return list;
+		}
+
+	}
+	/**************************************************************************************/
+	. xml 설정 방식의 예와 마찬가지로 DB 연동 없이 테스트를 위한 static 한 내부 데이터를 관리하며 CRUD 하는 예임.
+
+5) Config Bean 클래스 작성
+	. /lab201-ioc/src/main/java/egovframework/lab/ioc/config/EmpConfig.java 를 작성한다.
+	/**************************************************************************************/
+	@Configuration
+	public class EmpConfig {
+	
+		@Bean
+    	public JavaConfigEmpDAO javaConfigEmpDAO() {
+        	return new JavaConfigEmpDAO();
+    	}
+	
+		@Bean(name = "javaConfigEmpService")
+    	public EmpService javaConfigEmpService() {
+        	JavaConfigEmpServiceImpl empService = new JavaConfigEmpServiceImpl();
+        	empService.setEmpDAO(javaConfigEmpDAO());
+        	return empService;
+    	}
+
+	}
+	/**************************************************************************************/
+	. javaConfigEmpService 와 JavaConfigEmpDAO 에 대한 bean 설정을 확인할 수 있으며 xml의 property 설정 요소 대신 setEmpDAO 메서드로 JavaConfigEmpDAO 를 연결하고 있음을 확인 가능.
+	. xml 설정과 다르게 오타가 발생한 경우는 컴파일 에러가 발생하므로 바로 확인 가능.
+
+6) Testcase 작성 (기존 Testcase 에서 DI 하는 서비스만 변경)
+	. /lab201-ioc/src/test/java/egovframework/lab/ioc/service/EmpServiceTest.java 를 작성한다. (이미 작성하였음.)
+	/**************************************************************************************/
+
+	@ExtendWith(SpringExtension.class)
+	/*
+	@ContextConfiguration(
+	locations = {
+    	"classpath*:META-INF/spring/context-common.xml"
+    	,"classpath*:META-INF/spring/context-emp.xml"
+    	// 이 주석을 풀고 테스트 시 annotationEmpService 에 대해서는 delete 메서드에 @Debug 를 설정하였으므로 trace 로그가 출력될 것임.
+    	//,"classpath*:META-INF/spring/context-postprocessor.xml"
+    	})
+	*/
+	// Java Config만 사용할 경우 위의 locations 설정된 @ContextConfiguration 전체를 주석 처리하고 밑의 주석을 풀도록 한다.
+	// 또한 정확한 테스트를 위해 [Step 2-5] 에서의 component-scan 설정을 주석 처리하도록 한다. 
+	@ContextConfiguration(classes = EmpConfig.class) 
+	public class EmpServiceTest {
+
+    // xml 형식으로 bean 설정한 경우 - 주석을 변경해 가며 xml, annotation, java config 에 대해 테스트 할것
+	// @Resource(name = "xmlEmpService")
+	// EmpService empService;
+
+    // annotation 형식으로 bean 설정한 경우
+    //@Resource(name = "annotationEmpService")
+    //EmpService empService;
+
+	// java config 형식으로 bean 설정한 경우
+    @Resource(name = "javaConfigEmpService")
+    EmpService empService;
+
+	// ... 나머지 코드는 그대로 유지
+	}
+	/**************************************************************************************/
+	. Java Config 형식으로 설정한 javaConfigEmpService 를 테스트 대상 서비스로 사용토록 주석 변경하였음.
+	. @ContextConfiguration의 경우, 한 가지 방식의 리소스 선언만 지원하므로 locations가 설정된 부분은 주석 처리하고 classes가 설정된 부분의 주석을 해제하도록 한다. 
+	. 주석 변경 후에는 Cntl + Shift + O 로 누락된 Organize imports를 수행하도록 한다.
+	. 이전에 어노테이션 기반 테스트를 수행한 상태라면 자동 등록된 annotationEmpService가 주입되게 되므로 정확한 테스트를 위해 [Step 2-5] 에서의 component-scan 설정을 주석 처리하도록 한다. 

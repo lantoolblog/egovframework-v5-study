@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!-- xml 형식 bean 정의 -->
+  <!-- TODO [Step 1-5] xmlEmpService, xmlEmpDAO 에 대한 Spring bean 설정  작성 -->
+  <bean id="xmlEmpService" class="egovframework.lab.ioc.service.impl.XmlEmpServiceImpl">
+    <property name="empDAO" ref="xmlEmpDAO" />
+  </bean>
+
+  <bean id="xmlEmpDAO" class="egovframework.lab.ioc.service.impl.XmlEmpDAO" />
+</beans>

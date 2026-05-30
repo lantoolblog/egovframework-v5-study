@@ -1,0 +1,303 @@
+실습환경 구성
+ - lab202-aop 프로젝트 import
+ - maven repository 설정 및 dependency library 맞춤
+
+Step 1. XML 설정 방식의 AOP 테스트 서비스 작성
+
+ 1) Interface 작성
+	. /lab202-aop/src/main/java/egovframework/lab/aop/service/EmpService.java 를 확인한다.
+	lab201-ioc 와 동일함.
+
+ 2) VO 작성
+	. /lab202-aop/src/main/java/egovframework/lab/aop/service/EmpVO.java 를 확인한다.
+	. lab201-ioc 의 VO 와 동일함
+
+ 3) Impl 작성
+	. /lab202-aop/src/main/java/egovframework/lab/aop/service/impl/XmlEmpServiceImpl.java 를 확인한다.
+	/**************************************************************************************/
+		..
+
+		public EmpVO selectEmp(EmpVO empVO) throws Exception {
+			EmpVO resultVO;
+			resultVO = empDAO.selectEmp(empVO);
+
+			if(resultVO == null) {
+				throw new Exception("no data found!");
+			}
+
+			return resultVO;
+		}
+
+		..
+	/**************************************************************************************/
+	. lab201-ioc 와 대부분 동일하며 selectEmp 메서드에서 해당 데이터가 없는 경우 exception 을 throw 하도록 비지니스 로직을 추가하였음.
+
+ 4) DAO 작성
+	. /lab202-aop/src/main/java/egovframework/lab/aop/service/impl/XmlEmpDAO.java 를 확인한다.
+	. lab201-ioc 의 DAO 와 동일함.
+
+ 5) xml 설정 파일 작성
+	. /lab202-aop/src/test/resources/META-INF/spring/context-emp.xml 를 확인한다.
+	. lab201-ioc 의 설정과 동일함.
+
+ 6) Advice 작성
+	. /lab202-aop/src/main/java/egovframework/lab/aop/xml/AdviceUsingXML.java 를 작성한다.
+	/**************************************************************************************/
+	public class AdviceUsingXML {
+
+		//TODO [Step 1-6] AdviceUsingXML 작성
+		private static final Logger LOGGER = LoggerFactory.getLogger(AdviceUsingXML.class);
+
+		public void beforeTargetMethod(JoinPoint thisJoinPoint) {
+			LOGGER.debug("\nAdviceUsingXML.beforeTargetMethod executed.");
+
+			@SuppressWarnings("unused")
+			Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
+			String className = thisJoinPoint.getTarget().getClass().getSimpleName();
+			String methodName = thisJoinPoint.getSignature().getName();
+
+			// 현재 class, method 정보 및 method arguments 로깅
+			StringBuffer buf = new StringBuffer();
+			buf.append("\n== AdviceUsingXML.beforeTargetMethod : [" + className
+				+ "." + methodName + "()] ==");
+			Object[] arguments = thisJoinPoint.getArgs();
+			int argCount = 0;
+			for (Object obj : arguments) {
+				buf.append("\n - arg ");
+				buf.append(argCount++);
+				buf.append(" : ");
+				// commons-lang 의 ToStringBuilder 를
+				// 통해(reflection 을 이용)한 VO 정보 출력
+				buf.append(ToStringBuilder.reflectionToString(obj));
+			}
+
+			// 대상 클래스의 logger 를 사용하여 method arguments 로깅
+			// 하였음.
+			LOGGER.debug(buf.toString());
+
+		}
+
+		public void afterTargetMethod(JoinPoint thisJoinPoint) {
+			LOGGER.debug("AdviceUsingXML.afterTargetMethod executed.");
+		}
+
+		public void afterReturningTargetMethod(JoinPoint thisJoinPoint,
+				Object retVal) {
+			LOGGER.debug("AdviceUsingXML.afterReturningTargetMethod executed.");
+
+			@SuppressWarnings("unused")
+			Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
+			String className = thisJoinPoint.getTarget().getClass().getSimpleName();
+			String methodName = thisJoinPoint.getSignature().getName();
+
+			// 현재 class, method 정보 및 method arguments 로깅
+			StringBuffer buf = new StringBuffer();
+			buf.append("\n== AdviceUsingXML.afterReturningTargetMethod : ["
+				+ className + "." + methodName + "()] ==");
+
+			buf.append("\n");
+
+			// 결과값이 List 이면 size 와 전체 List 데이터를 풀어
+			// reflection 으로 출력 - 성능상 사용않는 것이 좋음
+			if (retVal instanceof List) {
+				List<?> resultList = (List<?>) retVal;
+				buf.append("resultList size : " + resultList.size() + "\n");
+				for (Object oneRow : resultList) {
+					buf.append(ToStringBuilder.reflectionToString(oneRow));
+					buf.append("\n");
+				}
+			} else {
+				
+			}
+
+			// 대상 클래스의 logger 를 사용하여 결과값 로깅
+			// 하였음.
+			LOGGER.debug(buf.toString());
+
+			// return value 의 변경은 불가함에 유의!
+		}
+
+		public void afterThrowingTargetMethod(JoinPoint thisJoinPoint,
+				Exception exception) throws Exception {
+			LOGGER.debug("AdviceUsingXML.afterThrowingTargetMethod executed.");
+			LOGGER.error("에러가 발생했습니다. {}", exception);
+
+			// 원본 exception 을 wrapping 하고 user-friendly 한
+			// 메시지를 설정하여 새로운 Exception 으로 re-throw
+			throw new BizException("에러가 발생했습니다.", exception);
+
+			// 여기서는 간단하게 작성하였지만 일반적으로 messageSource 를 사용한
+			// locale 에 따른 다국어 처리 및 egov. exceptionHandler
+			// 를 확장한 Biz. (ex. email 공지 등) 기능 적용이 가능함.
+		}
+
+		public Object aroundTargetMethod(ProceedingJoinPoint thisJoinPoint)
+				throws Throwable {
+			LOGGER.debug("AdviceUsingXML.aroundTargetMethod start.");
+			long time1 = System.currentTimeMillis();
+
+			Object retVal = thisJoinPoint.proceed();
+
+			// Around advice 의 경우 결과값을 변경할 수도 있음!
+			// 위의 retVal 을 가공하거나 심지어 전혀 다른 결과값을 대체하여
+			// caller 에 되돌려줄 수 있음
+
+			long time2 = System.currentTimeMillis();
+			LOGGER.debug("AdviceUsingXML.aroundTargetMethod end. Time({})", (time2 - time1));
+
+			return retVal;
+		}
+
+	}
+	/**************************************************************************************/
+
+ 7) xml 설정 방식의 AOP 정의 작성
+	. /lab202-aop/src/test/resources/META-INF/spring/context-advice-xml.xml 를 작성한다.
+	/**************************************************************************************/
+	<bean id="adviceUsingXML" class="egovframework.lab.aop.xml.AdviceUsingXML" />
+
+		<aop:config>
+			<aop:pointcut id="targetMethod"
+				expression="execution(* egovframework.lab.aop..Xml*Impl.*(..))" />
+			<aop:aspect ref="adviceUsingXML">
+				<aop:before pointcut-ref="targetMethod" method="beforeTargetMethod" />
+				<aop:after-returning pointcut-ref="targetMethod"
+					method="afterReturningTargetMethod" returning="retVal" />
+				<aop:after-throwing pointcut-ref="targetMethod"
+					method="afterThrowingTargetMethod" throwing="exception" />
+				<aop:after pointcut-ref="targetMethod" method="afterTargetMethod" />
+				<aop:around pointcut-ref="targetMethod" method="aroundTargetMethod" />
+			</aop:aspect>
+		</aop:config>
+	/**************************************************************************************/
+	. 별도의 클래스로 작성한 Advice bean 을 등록하고, aop 네임스페이스 빈 설정 태그(aop:config, aop:pointcut, aop:aspect, before/after-returning/after-throwing/after/around 정의 등) 를 사용하여 AOP 설정. 여기서는 모든 비지니스 메서드(Impl 로 끝나는 모든 class 의 모든 메서드)에 대해 다양한 Advice 기능을 동시에 적용하였음에 유의할 것.
+
+
+ 8) Testcase 작성
+	. /lab202-aop/src/test/java/egovframework/lab/aop/service/EmpServiceTest.java 를 작성한다.
+	/**************************************************************************************/
+	public class EmpServiceTest {
+
+		// TODO [Step 1-8, 2-8] EmpServiceTest 작성
+
+		// xml 형식으로 bean 설정한 경우 - 주석을 변경해 가며 xml,
+		// annotation 에 대해 테스트 할것
+		@Resource(name = "xmlEmpService")
+		EmpService empService;
+
+		// annotation 형식으로 bean 설정한 경우
+		// @Resource(name = "annotationEmpService")
+		// EmpService empService;
+
+		public EmpVO makeVO() {
+			// DAO 확인 - static 하게 관리하는 100 개 기본 데이터 있음
+			return makeVO(101);
+		}
+
+		public EmpVO makeVO(int empNo) {
+			EmpVO vo = new EmpVO();
+			vo.setEmpNo(empNo);
+			vo.setEmpName("홍길동" + empNo);
+			vo.setJob("개발자");
+			return vo;
+		}
+
+		public void checkResult(EmpVO vo, EmpVO resultVO) {
+			assertNotNull(resultVO);
+			assertEquals(vo.getEmpNo(), resultVO.getEmpNo());
+			assertEquals(vo.getEmpName(), resultVO.getEmpName());
+			assertEquals(vo.getJob(), resultVO.getJob());
+		}
+
+		@Test
+		public void testInsertEmp() throws Exception {
+			EmpVO vo = makeVO();
+
+			// insert
+			empService.insertEmp(vo);
+
+			// select
+			EmpVO resultVO = empService.selectEmp(vo);
+
+			// check
+			checkResult(vo, resultVO);
+		}
+
+		@Test
+		public void testUpdateEmp() throws Exception {
+			EmpVO vo = makeVO(102);
+
+			// insert
+			empService.insertEmp(vo);
+
+			// data change
+			vo.setEmpName("홍길순");
+			vo.setJob("설계자");
+
+			// update
+			empService.updateEmp(vo);
+
+			// select
+			EmpVO resultVO = empService.selectEmp(vo);
+
+			// check
+			checkResult(vo, resultVO);
+		}
+
+		@Test
+		public void testDeleteEmp() throws Exception {
+			EmpVO vo = makeVO(103);
+
+			// insert
+			empService.insertEmp(vo);
+
+			// delete
+			empService.deleteEmp(vo);
+
+			// select
+			try {
+				@SuppressWarnings("unused")
+				EmpVO resultVO = empService.selectEmp(vo);
+				fail("Biz Exception 이 발생해야 합니다.");
+			} catch (Exception e) {
+				assertNotNull(e);
+				// aop 를 적용하여 after-throwing 에서 가공한 BizException 으로 넘어올 것임.
+				// cf.) ServiceImpl 원본에서는 그냥 Exception 이었음.
+				assertTrue(e instanceof BizException);
+				assertEquals("에러가 발생했습니다.", e.getMessage());
+				assertEquals("no data found!", e.getCause().getMessage());
+			}
+		}
+
+		@Test
+		public void testSelectEmpList() throws Exception {
+
+			// select list
+			List<EmpVO> resultList = empService.selectEmpList();
+
+			// check
+			int firstListSize = resultList.size();
+			// DAO 에서 Emp 데이터를 관리할 때 항상 sorted 된 상태임
+			assertEquals(1, resultList.get(0).getEmpNo());
+
+			// delete first data
+			EmpVO empVO = new EmpVO();
+			empVO.setEmpNo(1);
+
+			empService.deleteEmp(empVO);
+
+			// select List again
+			resultList = empService.selectEmpList();
+
+			assertEquals(firstListSize - 1, resultList.size());
+			// DAO 에서 Emp 데이터를 관리할 때 항상 sorted 된 상태임
+			assertEquals(2, resultList.get(0).getEmpNo());
+			assertEquals("EmpName 2", resultList.get(0).getEmpName());
+			assertEquals("SALESMAN", resultList.get(0).getJob());
+
+		}
+
+	}
+	/**************************************************************************************/
+	. lab201-ioc 의 테스트케이스와 유사하며 ContextConfiguration 설정 파일 로딩에 유의할것.
+	. delete 테스트의 경우 삭제 후 재조회 시 null 인 경우 강제 Exception 처리를 하였고 이를 다시 after-throwing AOP 처리로 BizException 으로 재처리한 것을 테스트 하고 있음.

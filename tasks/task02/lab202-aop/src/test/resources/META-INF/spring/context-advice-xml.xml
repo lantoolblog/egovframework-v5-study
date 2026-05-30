@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+  <!-- TODO [Step 1-7] xml 설정 방식의 AOP 설정  -->
+  <bean id="adviceUsingXML" class="egovframework.lab.aop.xml.AdviceUsingXML" />
+
+  <aop:config>
+    <aop:pointcut id="targetMethod"
+      expression="execution(* egovframework.lab.aop..Xml*Impl.*(..))" />
+    <aop:aspect ref="adviceUsingXML">
+      <aop:before pointcut-ref="targetMethod" method="beforeTargetMethod" />
+      <aop:after-returning pointcut-ref="targetMethod"
+        method="afterReturningTargetMethod" returning="retVal" />
+      <aop:after-throwing pointcut-ref="targetMethod"
+        method="afterThrowingTargetMethod" throwing="exception" />
+      <aop:after pointcut-ref="targetMethod" method="afterTargetMethod" />
+      <aop:around pointcut-ref="targetMethod" method="aroundTargetMethod" />
+    </aop:aspect>
+  </aop:config>
+
+</beans>
