@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	==============================================================
+	TODO [07. Dept 계층(Mapper Interface 방식) Mapper XML 파일 00] 개요
+	      Mapper Interface(DeptMapper) 와 매핑되는 Mapper XML 을 완성하십시오.
+	==============================================================
+	요구사항:
+	(1) namespace 지정
+	    - Mapper Interface 방식(방법 2)에서는 namespace 가
+		  Mapper Interface 의 풀패키지명과 정확히 일치해야 한다.
+	    - DeptMapper 인터페이스의 FQCN: egovframework.lab.dept.service.impl.DeptMapper
+	    - namespace 가 어긋나면 MyBatis 가 DeptMapper.java 의 메서드와 이 XML 의
+	      statement 를 연결하지 못해 BindingException 이 발생한다.
+	    - (방법 1 = EgovAbstractMapper 상속 + EmpMapper.xml namespace="Emp" 와 대비됨)
+
+	(2) <select id="selectDeptByCondition"> Dynamic SQL 작성 (<where> + <if>)
+	    - statement id : selectDeptByCondition
+	    - parameterType: deptSearchVO
+	    - resultType   : deptVO
+	    - <where> 태그 사용 (안쪽 <if> 가 모두 false 이면 WHERE 절 자체가 자동으로 사라짐)
+	    - 조건 1: deptName 이 null / 빈 문자열이 아니면
+	              AND DEPT_NAME LIKE '%' || #{deptName} || '%'
+	    - 조건 2: loc 가 null / 빈 문자열이 아니면
+	              AND LOC = #{loc}
+	    - ORDER BY DEPT_NO
+
+	    힌트: <if test="deptName != null and deptName != ''">
+
+	※ Mapper Interface 방식(방법 2) 일반 원칙:
+	   - 각 statement 의 id 는 DeptMapper 인터페이스의 메서드명과 정확히 일치해야 한다.
+	   - 이미 완성된 <insert>/<update>/<delete>/<select> 의 parameterType/resultType 작성 스타일을 참고한다.
+
+	검증 테스트: DeptMapperTest (참고: DeptMapperCrudTest)
+-->
+<!-- TODO [07. Dept 계층(Mapper Interface 방식) Mapper XML 파일 01] namespace 를 DeptMapper 인터페이스의 풀패키지명과 정확히 일치시키십시오. -->
+<mapper namespace="egovframework.lab.dept.service.impl.DeptMapper">
+
+	<sql id="deptColumns">
+		DEPT_NO, DEPT_NAME, LOC
+	</sql>
+
+	<insert id="insertDept" parameterType="deptVO">
+		INSERT INTO DEPT (
+			DEPT_NO, DEPT_NAME, LOC
+		) VALUES (
+			#{deptNo}, #{deptName}, #{loc}
+		)
+	</insert>
+
+	<update id="updateDept" parameterType="deptVO">
+		UPDATE DEPT
+		SET DEPT_NAME = #{deptName},
+			LOC = #{loc}
+		WHERE DEPT_NO = #{deptNo}
+	</update>
+
+	<update id="updateDeptSelective" parameterType="deptVO">
+		UPDATE DEPT
+		<set>
+			<if test="deptName != null">DEPT_NAME = #{deptName},</if>
+			<if test="loc != null">LOC = #{loc},</if>
+		</set>
+		WHERE DEPT_NO = #{deptNo}
+	</update>
+
+	<delete id="deleteDept" parameterType="java.math.BigDecimal">
+		DELETE FROM DEPT
+		WHERE DEPT_NO = #{deptNo}
+	</delete>
+
+	<select id="selectDept" parameterType="java.math.BigDecimal" resultType="deptVO">
+		SELECT
+			<include refid="deptColumns" />
+		FROM DEPT
+		WHERE DEPT_NO = #{deptNo}
+	</select>
+
+	<select id="selectAllDept" resultType="deptVO">
+		SELECT
+			<include refid="deptColumns" />
+		FROM DEPT
+		ORDER BY DEPT_NO
+	</select>
+
+	<!-- TODO [07. Dept 계층(Mapper Interface 방식) Mapper XML 파일 02] selectDeptByCondition 의 Dynamic SQL 을 완성하십시오. -->
+	<!--
+		 - statement id : selectDeptByCondition
+	     - parameterType: deptSearchVO
+	     - resultType   : deptVO
+	     - <where> 태그 사용 (안쪽 <if> 가 모두 false 이면 WHERE 절 자체가 자동으로 사라짐)
+	     - 조건 1: deptName 이 null / 빈 문자열이 아니면
+	               AND DEPT_NAME LIKE '%' || #{deptName} || '%'
+	     - 조건 2: loc 가 null / 빈 문자열이 아니면
+	               AND LOC = #{loc}
+	     - ORDER BY DEPT_NO
+	-->
+	<select id="selectDeptByCondition">
+		SELECT
+			<include refid="deptColumns" />
+		FROM DEPT
+		<where>
+			<if test="deptName != null and deptName != ''">
+				AND DEPT_NAME LIKE '%' || #{deptName} || '%'
+			</if>
+			<if test="loc != null and loc != ''">
+				AND LOC = #{loc}
+			</if>
+		</where>
+		ORDER BY DEPT_NO
+	</select>
+
+	<select id="selectDeptByDeptNoIn" parameterType="deptSearchVO" resultType="deptVO">
+		SELECT
+			<include refid="deptColumns" />
+		FROM DEPT
+		<choose>
+			<when test="deptNoList != null and deptNoList.size() &gt; 0">
+				WHERE DEPT_NO IN
+				<foreach collection="deptNoList" item="no" open="(" separator="," close=")">
+					#{no}
+				</foreach>
+			</when>
+			<otherwise>
+				WHERE 1 = 0
+			</otherwise>
+		</choose>
+		ORDER BY DEPT_NO
+	</select>
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	==============================================================
+	TODO [05. Emp 계층(iBatis 방식 계승) Mapper XML 파일 00] 개요
+	      EgovAbstractMapper 상속 방식의 Mapper XML 을 완성하십시오.
+	==============================================================
+	요구사항:
+	(1) namespace 지정
+	    - EgovAbstractMapper 상속 방식(방법 1)에서는 namespace 가 Mapper Interface 방식(방법 2)과
+	      달리 풀패키지명일 필요 없이 짧은 임의의 이름이면 된다.
+	    - EmpDAO 가 "Emp.insertEmp", "Emp.selectEmp" 형식으로 호출하므로
+	      namespace 를 정확히 "Emp" 로 지정해야 한다. (DAO 의 "namespace.statementId" 규약과 일치)
+	(2) <select id="selectEmp"> SQL 완성
+	    - WHERE EMP_NO 조건에 파라미터로 넘어온 empNo 를 #{empNo} 로 바인딩한다.
+	    - #{} 는 PreparedStatement 의 ? 플레이스홀더로 치환되어 SQL Injection 을 방지한다.
+	      반면에 ${} 는 단순 문자열 치환이므로 바인딩이 아닌 하드코딩 방식이며 보안에 취약하다.
+	    - 이미 완성된 <insert>/<update>/<delete> 의 #{...} 작성 스타일을 참고한다.
+
+	검증 테스트: EmpMapperTest (참고: EmpMapperCrudTest)
+-->
+<!-- TODO [05. Emp 계층(iBatis 방식 계승) Mapper XML 파일 01] namespace 를 EmpDAO 의 호출 prefix 와 일치하도록 지정하십시오. -->
+<mapper namespace="Emp">
+
+	<sql id="empColumns">
+		EMP_NO, EMP_NAME, JOB, MGR, HIRE_DATE, SAL, COMM, DEPT_NO
+	</sql>
+
+	<insert id="insertEmp" parameterType="empVO">
+		INSERT INTO EMP (
+			EMP_NO, EMP_NAME, JOB, MGR, HIRE_DATE, SAL, COMM, DEPT_NO
+		) VALUES (
+			#{empNo}, #{empName}, #{job}, #{mgr}, #{hireDate}, #{sal}, #{comm}, #{deptNo}
+		)
+	</insert>
+
+	<update id="updateEmp" parameterType="empVO">
+		UPDATE EMP
+		SET EMP_NAME = #{empName},
+			JOB = #{job},
+			MGR = #{mgr},
+			HIRE_DATE = #{hireDate},
+			SAL = #{sal},
+			COMM = #{comm},
+			DEPT_NO = #{deptNo}
+		WHERE EMP_NO = #{empNo}
+	</update>
+
+	<delete id="deleteEmp" parameterType="java.math.BigDecimal">
+		DELETE FROM EMP WHERE EMP_NO = #{empNo}
+	</delete>
+
+	<!-- TODO [05. Emp 계층(iBatis 방식 계승) Mapper XML 파일 02] WHERE 조건의 empNo 파라미터를 바인딩 문법으로 작성하십시오. -->
+	<select id="selectEmp" parameterType="java.math.BigDecimal" resultType="empVO">
+		SELECT
+			<include refid="empColumns" />
+		FROM EMP
+		WHERE EMP_NO = #{empNo}
+	</select>
+
+	<select id="selectAllEmp" resultType="empVO">
+		SELECT
+			<include refid="empColumns" />
+		FROM EMP
+		ORDER BY EMP_NO
+	</select>
+
+</mapper>

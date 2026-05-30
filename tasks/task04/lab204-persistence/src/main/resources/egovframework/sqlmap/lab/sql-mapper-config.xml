@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!--
+		==============================================================
+		TODO [03. MyBatis Configuration XML 파일 00] 개요
+		      MyBatis 전역 설정을 등록하십시오.
+		==============================================================
+		요구사항:
+		(1) settings 등록
+			- mapUnderscoreToCamelCase = true
+		      → DB 컬럼 DEPT_NO 가 자동으로 deptNo 로 매핑되어 resultMap 작성을 줄여준다.
+			    (언더스코어 → CamelCase 자동 변환)
+			- cacheEnabled = true (기본값이지만 명시 권장)
+			- lazyLoadingEnabled = false
+		(2) typeAlias 등록
+			- 다음 4개 별칭을 등록
+			  - alias        →  type
+			    - deptVO       →  egovframework.lab.dept.service.DeptVO
+			    - deptSearchVO →  egovframework.lab.dept.service.DeptSearchVO
+			    - empVO        →  egovframework.lab.emp.service.EmpVO
+			    - egovMap      →  org.egovframe.rte.psl.dataaccess.util.EgovMap
+
+		검증 테스트: MyBatisConfigTest
+	-->
+
+	<!-- TODO [03. MyBatis Configuration XML 파일 01] settings를 등록하십시오. -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="false" />
+	</settings>
+
+	<!-- TODO [03. MyBatis Configuration XML 파일 02] typeAlias를 등록하십시오. -->
+	<typeAliases>
+		<typeAlias alias="deptVO"
+			type="egovframework.lab.dept.service.DeptVO" />
+		<typeAlias alias="deptSearchVO"
+			type="egovframework.lab.dept.service.DeptSearchVO" />
+		<typeAlias alias="empVO"
+			type="egovframework.lab.emp.service.EmpVO" />
+		<typeAlias alias="egovMap"
+			type="org.egovframe.rte.psl.dataaccess.util.EgovMap" />
+	</typeAliases>
+
+</configuration>

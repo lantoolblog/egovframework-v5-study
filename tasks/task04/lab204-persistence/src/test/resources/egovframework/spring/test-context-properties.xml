@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!--
+		테스트 전용 최소 프로퍼티 로더.
+
+		운영용 context-common.xml 에는 <context:component-scan> 이 포함되어 있어
+		DataSource/Mapper 계층 테스트만 실행하더라도 @Service 빈까지 스캔되며,
+		그 과정에서 아직 교육생이 작성하지 않은 목록의 영향으로 컨텍스트가 기동 실패하게 된다.
+
+		이 파일은 ${jdbc.*} placeholder 해석만 담당하여
+		각 테스트 계층이 서로의 완성도와 무관하게 독립적으로 실행되도록 한다.
+	-->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+</beans>

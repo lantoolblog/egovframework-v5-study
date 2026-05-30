@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!--
+		==============================================================
+		TODO [01. DataSource 00] 개요
+		      DBCP DataSource 빈을 등록하십시오.
+		==============================================================
+		요구사항:
+		  (1) bean id 는 "dataSource", class 는 "org.apache.commons.dbcp2.BasicDataSource" (DBCP2), destroy-method는 "close" 로 풀 종료 처리
+		  (2) 4가지 접속 정보는 jdbc.properties 에서 ${jdbc.driver} ${jdbc.url}
+		      ${jdbc.username} ${jdbc.password} 로 주입
+		  (3) 풀 설정 4가지를 명시적으로 지정 (initialSize, maxTotal, maxIdle, minIdle)
+		      initialSize <= maxTotal = maxIdle >= minIdle
+
+		참고:
+		  - 외부에서 별도로 띄운 HSQLDB 서버에 접속하므로
+		    <jdbc:embedded-database> 가 아닌 BasicDataSource 를 사용한다.
+		  - jdbc.properties 의 placeholder 는 context-common.xml 에서 활성화된다.
+		  - 그 결과 ${...} 같은 placeholder 방식으로 jdbc.properties의 값을 주입할 수 있다.
+
+		검증 테스트: DataSourceTest
+	-->
+
+	<!-- DBCP DataSource (외부에서 띄운 HSQLDB 서버에 접속) -->
+	<!-- TODO [01. DataSource 01] class에 DBCP2 BasicDataSource 타입을 지정하십시오. -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<!-- 접속 정보 설정 -->
+		<!-- TODO [01. DataSource 02] 접속 정보 설정을 완성하십시오. -->
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!-- 풀 설정 -->
+		<!-- TODO [01. DataSource 03] 풀 설정을 완성하십시오. -->
+		<property name="initialSize" value="2" />
+		<property name="maxTotal" value="8" />
+		<property name="maxIdle" value="8" />
+		<property name="minIdle" value="2" />
+	</bean>
+
+</beans>

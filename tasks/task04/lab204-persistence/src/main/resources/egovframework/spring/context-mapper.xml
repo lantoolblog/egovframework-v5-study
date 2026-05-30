@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!--
+		==============================================================
+		TODO [02. MyBatis-Spring 연동 00] 개요
+		      MyBatis-Spring 연동 빈을 등록하십시오.
+		==============================================================
+		요구사항:
+		(1) SqlSessionFactoryBean 등록
+		    - bean id 는 "sqlSession" (MapperConfigurer 가 이 이름을 참조함)
+			- class 는 org.mybatis.spring.SqlSessionFactoryBean
+			- dataSource 주입
+			- configLocation: classpath:/egovframework/sqlmap/lab/sql-mapper-config.xml
+			- mapperLocations: classpath*:/egovframework/sqlmap/lab/mappers/**/*.xml
+
+		(2) MapperConfigurer 등록
+		    - class 는 org.egovframe.rte.psl.dataaccess.mapper.MapperConfigurer
+			- basePackage 속성에 @EgovMapper 가 부착된 인터페이스가 위치한 패키지(또는 그 상위 패키지)를 지정
+
+		검증 테스트: MyBatisSpringConfigTest
+	-->
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+	<!-- TODO [02. MyBatis-Spring 연동 01] SqlSessionFactoryBean 등록하십시오. -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation"
+				  value="classpath:/egovframework/sqlmap/lab/sql-mapper-config.xml" />
+		<property name="mapperLocations"
+				  value="classpath*:/egovframework/sqlmap/lab/mappers/**/*.xml" />
+	</bean>
+
+	<!-- @EgovMapper 어노테이션이 부착된 Mapper Interface 자동 스캔 -->
+	<!-- TODO [02. MyBatis-Spring 연동 02] MapperConfigurer 등록하십시오. -->
+	<bean class="org.egovframe.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="egovframework.lab" />
+	</bean>
+
+</beans>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!--
+		==============================================================
+		선언적 트랜잭션 설정을 작성하시오.
+		==============================================================
+		(1) PlatformTransactionManager 등록
+		    - bean id = "txManager"
+		    - DataSourceTransactionManager
+		    - dataSource 주입
+
+		(2) <tx:advice id="txAdvice" transaction-manager="txManager"> 작성
+		    <tx:attributes> 안에 다음 4개의 메서드명 패턴을 정의:
+		      ┌─────────────────────────┬──────────────────────────────────────┐
+		      │ name="find*"            │ read-only="true"                     │
+		      │ name="createNoRBRole*"  │ no-rollback-for="java.lang.Exception"│
+		      │ name="createRBRole*"    │ rollback-for="java.lang.Exception"   │
+		      │ name="create*"          │ (기본 동작 - RuntimeException 만 롤백)   │
+		      └─────────────────────────┴──────────────────────────────────────┘
+		      ※ 와일드카드 사용. 더 구체적인 패턴이 위에 와야 함.
+
+		(3) AOP pointcut + advisor 설정
+		    - pointcut expression:
+		      execution(* egovframework.lab..impl.*Impl.*(..))
+		    - advice-ref="txAdvice"
+
+		검증 테스트: DeptServiceTransactionTest
+	-->
+
+
+</beans>

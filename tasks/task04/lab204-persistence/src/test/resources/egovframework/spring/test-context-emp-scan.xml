@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!--
+		테스트 전용 좁은 범위 component-scan.
+
+		운영용 context-common.xml 은 egovframework.lab 전체를 스캔하여
+		EgovDeptServiceImpl(@Service) 까지 끌어들이므로
+		EmpDAOTest 하나만 실행하더라도 Dept 서비스/매퍼의 투두까지 영향을 받는다.
+
+		이 파일은 EmpDAO(@Repository) 만 등록되도록 emp 하위 패키지로만 스캔 범위를 제한하여
+		EmpDAOTest 가 독립적으로 실행되도록 한다.
+	-->
+	<context:component-scan base-package="egovframework.lab.emp" />
+
+</beans>
