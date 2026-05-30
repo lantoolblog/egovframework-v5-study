@@ -1,10 +1,14 @@
 package egovframework.example.bat.job;
 
+import java.io.File;
+
 import javax.sql.DataSource;
 
 import org.egovframe.rte.bat.core.item.database.EgovJdbcBatchItemWriter;
 import org.egovframe.rte.bat.core.item.database.support.EgovMethodMapItemPreparedStatementSetter;
 import org.egovframe.rte.bat.core.item.file.mapping.EgovObjectMapper;
+import org.egovframe.rte.bat.core.item.file.transform.EgovFieldExtractor;
+import org.egovframe.rte.bat.core.item.file.transform.EgovFixedLengthLineAggregator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -14,15 +18,19 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.item.file.transform.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.WritableResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import egovframework.example.bat.domain.trade.CustomerCredit;
@@ -60,15 +68,15 @@ public class FixedLengthToJdbcJobConfig {
                                       PlatformTransactionManager transactionManager,
                                       @Qualifier("fixedLengthToJdbcItemReader") FlatFileItemReader<CustomerCredit> fixedLengthItemReader,
                                       @Qualifier("fixedLengthToJdbcItemProcessor") CustomerCreditIncreaseProcessor itemProcessor,
-                                      EgovJdbcBatchItemWriter<CustomerCredit> jdbcBatchItemWriter
-                                      //FlatFileItemWriter<CustomerCredit> fixedLengthItemWriter
+                                      // EgovJdbcBatchItemWriter<CustomerCredit> jdbcBatchItemWriter
+                                      FlatFileItemWriter<CustomerCredit> fixedLengthItemWriter
                                       ) {
         return new StepBuilder("fixedLengthToJdbcStep", jobRepository)
                 .<CustomerCredit, CustomerCredit>chunk(2, transactionManager)
                 .reader(fixedLengthItemReader)
                 .processor(itemProcessor)
-                .writer(jdbcBatchItemWriter)
-                //.writer(fixedLengthItemWriter)
+                //.writer(jdbcBatchItemWriter)
+                .writer(fixedLengthItemWriter)
                 .build();
     }
     
@@ -133,13 +141,16 @@ public class FixedLengthToJdbcJobConfig {
     public EgovMethodMapItemPreparedStatementSetter<CustomerCredit> itemPreparedStatementSetter() {
     	return new EgovMethodMapItemPreparedStatementSetter<>();
     }
-    
-    /*
+
+
     @Bean
     @StepScope
     public FlatFileItemWriter<CustomerCredit> fixedLengthItemWriter() {
+    	// 1. 현재 로딩된 클래스의 최상위 루트 경로(target/classes 또는 WEB-INF/classes)를 가져옵니다.
+    	String classesPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+    	File classesDir = new File(classesPath);
 
-    	// WTP 배포 경로에서 프로젝트 루트 → {프로젝트루트}/target/outputs
+    	// WTP 배포 경로에서 프로젝트 루트 → {프로젝트루트}/target/outputs    	
     	String outputDir;
     	String realPath = servletContext.getRealPath("/");
     	int metadataIdx = realPath.indexOf(".metadata");
@@ -150,6 +161,7 @@ public class FixedLengthToJdbcJobConfig {
     	} else {
     		outputDir = realPath + "outputs";
     	}
+
     	File outputDirectory = new File(outputDir);
     	if (!outputDirectory.exists()) {
     		outputDirectory.mkdirs();
@@ -182,5 +194,5 @@ public class FixedLengthToJdbcJobConfig {
     	lineAggregator.setFieldExtractor(fieldExtractor());
     	return lineAggregator;
     }
-	*/
+	
 }
