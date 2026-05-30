@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>Job 실행 템플릿 예제 List(SAM)</title>
+    <link rel="stylesheet" th:href="@{/css/egovframework/batch.css}" />
+    <script type="text/javascript">
+        function fn_egov_batchRun() {
+            document.getElementById('listForm').submit();
+        }
+    </script>
+    <style>
+        body { text-align:center; margin:0 auto; display:inline; padding-top:100px; }
+    </style>
+    </head>
+<body>
+<div id="content_pop">
+    <div id="title">
+        <ul>
+            <li>
+                <img th:src="@{/images/egovframework/batch/title_dot.gif}" alt="" />
+                Job 실행 템플릿 List
+            </li>
+        </ul>
+    </div>
+
+    <form id="listForm" name="listForm" method="post" th:action="@{/batchRun.do}">
+        <div id="table">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <colgroup>
+                    <col width="40" />
+                    <col width="50" />
+                    <col width="%" />
+                </colgroup>
+                <tr>
+                    <th align="center">No</th>
+                    <th align="center">작업선택</th>
+                    <th align="center">Job 이름</th>
+                </tr>
+                <tr th:each="item, status : ${jobList}">
+                    <td align="center" class="listtd" th:text="${status.count}">1</td>
+                    <td align="center" class="listtd">
+                        <input type="radio" name="jobName" th:value="${item}" th:checked="${status.first}" />
+                    </td>
+                    <td align="center" class="listtd" th:text="${item}">jobName</td>
+                </tr>
+            </table>
+        </div>
+    </form>
+
+    <div id="sysbtn1">
+        <ul>
+            <li>
+                <div id="sysbtn">
+                    <ul>
+                        <li>
+                            <span class="btn_blue_l">
+                                <a href="#" onclick="fn_egov_batchRun();return false;">배치실행</a>
+                                <img th:src="@{/images/egovframework/batch/btn_bg_r.gif}" style="margin-left:6px;" alt="" />
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+
