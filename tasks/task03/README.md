@@ -51,8 +51,34 @@
 
 
 
-## (3) LAB 3. 배치 템플릿 프로젝트 생성 및 테스트 실습
+## (3) LAB 3. [배치 템플릿 프로젝트 생성 및 테스트 실습](lab603-batch-job-test2)
 
 * Batch Job을 테스트 한 결과 화면을 캡쳐
 
+* Antigravity에서 해보자! 동일한 생성 메뉴가 있는 것 같다.
+
+  ![Antigravity에서 배치Job 생성](doc-resources/lab-3-0-antigravity-batch-create.png)
+  
+  * 이게 DATABASE 디렉토리도 만들어주는데, 어차피 배치 프로젝트에서 인메모리 HSQLDB를 써서 사용하지 않고 있고... 버전도 오래된 버전이다.. 지우자..!!
+  
+  * EgovSchedulerJobRunner 실행 화면
+    ![EgovSchedulerJobRunner 실행 화면](doc-resources/lab-3-1-antigravity-batch-run.jpg)
+  
+    
+  
+  전자정부 프레임워크 VSCode 확장에 배치 테스트 코드 추가 기능은 없어서... 테스트 코드 추가 기능은 전자정부프레임워크IDE로 열어서 해야겠다.
+  
+  
+  
+  전자정부 프레임워크 IDE에서 EgovSchedulerJobRunner를 Java Application으로 실행해보자!
+  
+  ![EgovSchedulerJobRunner 실행 화면](doc-resources/lab-3-2-egov-ide-batch-run.jpg)
+  
+  
+  
+  역시 전자정부프레임워크 IDE에서는 배치 프로젝트 인식이 잘되고, Test를 자동으로 추가할 수 있었다.
+  
+  ![배치 테스트 수행](doc-resources/lab-3-3-egov-ide-batch-test.jpg)
+  
+  
 
