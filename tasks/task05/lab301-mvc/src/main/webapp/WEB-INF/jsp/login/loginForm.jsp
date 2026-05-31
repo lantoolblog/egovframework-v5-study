@@ -23,17 +23,17 @@
 <!-- TODO [Step 1-2-6] SpringMessage 사용 -->
 <table>
 	<tr>
-		<td><label for="id">로그인 ID</label></td>
+		<td><label for="id"><spring:message code="login.form.id" /></label></td>
 		<td><form:input id="id" path="id" /></td>
 		<td><form:errors path="id" /></td>
 	</tr>
 	<tr>
-		<td><label for="password">로그인 암호</label></td>
+		<td><label for="password"><spring:message code="login.form.password" /></label></td>
 		<td><form:password id="password" path="password" /></td>
 		<td><form:errors path="password" /></td>
 	</tr>
 	<tr>
-		<td><label for="loginType">로그인 타입</label></td>
+		<td><label for="loginType"><spring:message code="login.form.type" /></label></td>
 		<td>
 			<form:select path="loginType">
 				<option value="">---선택하세요---</option>
@@ -44,7 +44,7 @@
 	</tr>
 	<tr>
 		<td colspan="3">
-			<input type="submit" value="<spring:message code="login.form.submit" />">
+			<input type="submit" value="<spring:message code='login.form.submit' />">
 		</td>
 	</tr>
 </table>
