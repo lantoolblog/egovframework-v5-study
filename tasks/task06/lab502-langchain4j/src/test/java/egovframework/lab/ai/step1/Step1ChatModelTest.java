@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Step 1. ChatModel 기본 사용 테스트
  *
- * 테스트 실행 전 application.yml의 groq.api-key를 실제 Groq API 키로 변경.
+ * 테스트 실행 전 application.yml의 gemini.api-key를 실제 Gemini API 키로 변경.
  * Rate Limit이 발생할 경우 테스트를 개별 실행 보도록 한다.
  */
 @Slf4j

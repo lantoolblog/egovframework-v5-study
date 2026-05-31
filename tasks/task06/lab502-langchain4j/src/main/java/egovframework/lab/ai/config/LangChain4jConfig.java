@@ -18,9 +18,9 @@ public class LangChain4jConfig {
 
     @Bean
     public ChatModel chatModel(
-            @Value("${groq.api-key}") String apiKey,
-            @Value("${groq.base-url}") String baseUrl,
-            @Value("${groq.model}") String model) {
+            @Value("${gemini.api-key}") String apiKey,
+            @Value("${gemini.base-url}") String baseUrl,
+            @Value("${gemini.model}") String model) {
         return OpenAiChatModel.builder()
                 .apiKey(apiKey)
                 .baseUrl(baseUrl)

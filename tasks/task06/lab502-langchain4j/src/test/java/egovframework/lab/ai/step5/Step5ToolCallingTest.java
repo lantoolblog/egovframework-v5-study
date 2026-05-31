@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Step 5. Tool Calling 테스트
  *
- * 테스트 실행 전 application.yml의 groq.model을 llama-3.3-70b-versatile로 변경.
- * llama-3.1-8b-instant는 Tool Calling을 안정적으로 지원하지 않을 수 있음.
+ * 테스트 실행 전 application.yml의 gemini.model이 gemini-2.5-flash 등으로 설정되어 있는지 확인.
+ * gemini-2.5-flash는 Tool Calling을 기본적으로 지원합니다.
  */
 @Slf4j
 @SpringBootTest

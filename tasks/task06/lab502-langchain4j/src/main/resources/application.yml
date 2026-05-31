@@ -2,17 +2,16 @@ spring:
   application:
     name: lab-langchain4j
 
-groq:
-  # Groq에서 발급받은 API 키를 입력하세요.
-  # 발급 방법: https://console.groq.com 접속 → 회원가입 → API Keys 메뉴에서 키 생성
-  api-key: your_api_key
-  # Groq는 OpenAI 호환 API를 제공합니다. LangChain4j OpenAI 클라이언트와 함께 사용합니다.
-  # 주의: Spring AI와 달리 LangChain4j는 /v1을 자동으로 추가하지 않으므로 URL에 포함합니다.
-  base-url: https://api.groq.com/openai/v1
-  # Step 1~4 추천 모델 (무료, 빠름): llama-3.1-8b-instant
-  # Step 5 (Tool Calling) 추천 모델: llama-3.3-70b-versatile
-  model: llama-3.1-8b-instant
-# model: llama-3.3-70b-versatile
+gemini:
+  # Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.
+  # 발급 방법: https://aistudio.google.com/ 접속 → API 키 생성
+  api-key: ${GOOGLE_API_KEY}
+  # Gemini는 OpenAI 호환 API를 제공합니다. LangChain4j의 OpenAiChatModel과 함께 사용합니다.
+  # 주의: LangChain4j OpenAI 클라이언트는 base-url 끝에 /가 필수적으로 들어가야 합니다.
+  base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+  # 추천 모델: gemini-2.5-flash
+  model: gemini-2.5-flash
+
 
 logging:
   level:
