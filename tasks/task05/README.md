@@ -44,6 +44,8 @@
 
 ##### 과제(7) - MVC 실습 - 로그인 페이지 다국어 처리 결과
 
+![로그인 페이지 다국어 처리 결과](doc-resources/lab301-07-internalization.jpg)
+
 
 
 ## (2) LAB 302: [Ajax 실습](lab302-ajax)

@@ -4,11 +4,11 @@
       "command": "clean test"
     },
     {
-      "command": "-DskipTests clean package"
-    },
-    {
       "command": "-DskipTests clean prepare-package war:exploded"
     },
+    {
+      "command": "-DskipTests clean package"
+    }
   ],
   "rsp-ui.enableStartServerOnActivation": [
     {
