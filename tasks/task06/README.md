@@ -61,10 +61,28 @@
 
 ##### Langchain4j 실습(1) - ChatModel 기본 사용
 
+![ChatModel 기본 사용](doc-resources/lab502-langchain4j-1-chat_model.jpg)
+
+
+
 ##### Langchain4j 실습(2) - AiServices
+
+![AiServices](doc-resources/lab502-langchain4j-2-ai_services.jpg)
+
+
 
 ##### Langchain4j 실습(3) - PromptTemplate
 
+![PromptTemplate](doc-resources/lab502-langchain4j-3-prompt_template.jpg)
+
+
+
 ##### Langchain4j 실습(4) - Structed Output
 
+![Structed Output](doc-resources/lab502-langchain4j-4-structed_output.jpg)
+
+
+
 ##### Langchain4j 실습(5) - Tool Calling
+
+![Tool Calling](doc-resources/lab502-langchain4j-5-tool_calling.jpg)
