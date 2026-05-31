@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: lab-spring-ai
+  ai:
+    openai:
+      # Groq에서 발급받은 API 키를 입력.
+      # 발급 방법: https://console.groq.com 접속 → 회원가입 → Keys 메뉴에서 API Key 생성
+      api-key: your_api_key
+      base-url: https://api.groq.com/openai
+      chat:
+        options:
+          # 사용할 모델을 지정.
+          model: llama-3.1-8b-instant
+          # Step 5 (Tool Calling)
+          # model: llama-3.3-70b-versatile
+          max-tokens: 1024
+
+logging:
+  level:
+    egovframework.lab.ai: DEBUG
+    org.springframework.ai.model.tool.autoconfigure.ToolCallingAutoConfiguration: WARN
