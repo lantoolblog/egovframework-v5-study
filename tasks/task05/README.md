@@ -52,9 +52,19 @@
 
 ##### 과제(8) - Ajax 실습 - Ajax 첫 화면
 
+![Ajax 첫 화면](doc-resources/lab302-08-ajax-main-page.jpg)
+
+
+
 ##### 과제(9) - Ajax 실습 - autoComplete 기능 구현
 
+![autoComplete 기능 구현](doc-resources/lab302-09-ajax-autocomplete.jpg)
+
+
+
 ##### 과제(10) - Ajax 실습 - autoComplete, autoSelect 기능 구현
+
+
 
 
 

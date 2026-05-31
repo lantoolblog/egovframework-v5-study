@@ -3,7 +3,6 @@ package egovframework.lab.ajax.web;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,30 +13,37 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class AjaxSimpleController {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AjaxSimpleController.class);
 
-	private String[] keywords = { "Kim GilDong", "Kim NaRi", "Kim GilSu", "Kim Angel" };
+  private static final Logger LOGGER = LoggerFactory.getLogger(AjaxSimpleController.class);
 
-	@SuppressWarnings("unchecked")
-	private List<String> search(String keyword) {
-		if (ObjectUtils.isEmpty(keyword))
-			return java.util.Collections.EMPTY_LIST;
+  private String[] keywords = {"Kim GilDong", "Kim NaRi", "Kim GilSu", "Kim Angel"};
 
-		keyword = keyword.toUpperCase();
+  @SuppressWarnings("unchecked")
+  private List<String> search(String keyword) {
+    if (ObjectUtils.isEmpty(keyword)) return java.util.Collections.EMPTY_LIST;
 
-		List<String> result = new ArrayList<>();
+    keyword = keyword.toUpperCase();
 
-		for (int i = 0; i < keywords.length; i++) {
-			if (((String) keywords[i]).startsWith(keyword)) {
-				result.add(keywords[i]);
-			}
-		}
+    List<String> result = new ArrayList<>();
 
-		return result;
-	}
+    for (int i = 0; i < keywords.length; i++) {
+      if (((String) keywords[i]).startsWith(keyword)) {
+        result.add(keywords[i]);
+      }
+    }
 
-	//TODO [Step 2-1-1] simpleAjax 메소드 완성하기 
+    return result;
+  }
 
-
+  // TODO [Step 2-1-1] simpleAjax 메소드 완성하기
+  @RequestMapping(value = "/autoCompleteSimple.do")
+  public ModelAndView simpleAjax(@RequestParam("keyword") String keyword) throws Exception {
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("jsonView");
+    String decode_keyword = URLDecoder.decode(keyword, "utf-8");
+    List<?> keywordList = search(decode_keyword);
+    LOGGER.debug("result >" + keywordList.toString());
+    modelAndView.addObject("resultList", keywordList);
+    return modelAndView;
+  }
 }
