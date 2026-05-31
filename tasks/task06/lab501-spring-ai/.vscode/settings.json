@@ -1,0 +1,22 @@
+{
+  "maven.terminal.favorites": [
+    {
+      "command": "clean test"
+    },
+    {
+      "command": "-DskipTests clean prepare-package war:exploded"
+    },
+    {
+      "command": "-DskipTests clean package"
+    },
+  ],
+  "rsp-ui.enableStartServerOnActivation": [
+    {
+      "id": "redhat.vscode-community-server-connector",
+      "name": "Community Server Connector",
+      "startOnActivation": true
+    }
+  ],
+  // Community Server Connector 및 톰캣 구동용 Java Home 설정
+  "rsp-ui.rsp.java.home": "C:\\JDK\\17",
+}

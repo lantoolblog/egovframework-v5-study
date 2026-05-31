@@ -3,14 +3,14 @@ spring:
     name: lab-spring-ai
   ai:
     openai:
-      # Groq에서 발급받은 API 키를 입력.
-      # 발급 방법: https://console.groq.com 접속 → 회원가입 → Keys 메뉴에서 API Key 생성
-      api-key: your_api_key
-      base-url: https://api.groq.com/openai
+      # Gemini API : 시스템 환경변수에 GOOGLE_API_KEY 변수에 API 키를 미리 설정했음. 
+      api-key: ${GOOGLE_API_KEY}
+      base-url: https://generativelanguage.googleapis.com
       chat:
+        completions-path: v1beta/openai/chat/completions
         options:
           # 사용할 모델을 지정.
-          model: llama-3.1-8b-instant
+          model: gemini-2.5-flash
           # Step 5 (Tool Calling)
           # model: llama-3.3-70b-versatile
           max-tokens: 1024
