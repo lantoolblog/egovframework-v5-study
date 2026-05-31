@@ -64,7 +64,7 @@
 
 ##### 과제(10) - Ajax 실습 - autoComplete, autoSelect 기능 구현
 
-
+![autoComplete, autoSelect 기능 구현](doc-resources/lab302-10-ajax-autoselect.jpg)
 
 
 

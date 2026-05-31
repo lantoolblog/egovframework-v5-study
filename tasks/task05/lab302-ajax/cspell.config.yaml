@@ -1,0 +1,13 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - autoselected
+  - departmentid
+  - easaycompany
+  - employeelist
+  - Infofor
+  - superdeptid
+ignoreWords: []
+import: []
