@@ -5,13 +5,24 @@ spring:
 gemini:
   # Google AI Studio에서 발급받은 Gemini API 키를 입력하세요.
   # 발급 방법: https://aistudio.google.com/ 접속 → API 키 생성
-  api-key: ${GOOGLE_API_KEY}
+  # api-key: ${GOOGLE_API_KEY}
   # Gemini는 OpenAI 호환 API를 제공합니다. LangChain4j의 OpenAiChatModel과 함께 사용합니다.
   # 주의: LangChain4j OpenAI 클라이언트는 base-url 끝에 /가 필수적으로 들어가야 합니다.
-  base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+  # base-url: https://generativelanguage.googleapis.com/v1beta/openai/
   # 추천 모델: gemini-2.5-flash
-  model: gemini-2.5-flash
+  # model: gemini-2.5-flash
 
+  # 로컬 모델은 API 키가 필요 없으므로 아무 문자열이나 넣어도 무방함
+  api-key: ollama
+  # Ollama의 OpenAI 호환 엔드포인트 주소 (끝에 / 필수)
+  base-url: http://localhost:11434/v1/
+  # 로컬 모델명
+  # model: gemma2:2b # gemma2는 tools를 지원하지 않음
+  # model: qwen2.5:7b
+  model: llama3.1
+  timeout: 180s
+  # qwen이 기본이 중국어로 대답을 해서, 시스템 명령 프롬프트 추가.
+  system-prompt: "반드시 한국어로만 자연스럽게 답변해 주세요."
 
 logging:
   level:

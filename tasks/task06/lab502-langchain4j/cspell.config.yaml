@@ -5,5 +5,7 @@ dictionaries: []
 words:
   - groq
   - langchain
+  - ollama
+  - qwen
 ignoreWords: []
 import: []
