@@ -32,6 +32,7 @@ out/
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+!.vscode/vscode-java.prefs
 #!.vscode/launch.json
 #!.vscode/tasks.json
 
